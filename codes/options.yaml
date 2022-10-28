@@ -1,33 +1,30 @@
-name: test1
-train_dataset:
-  dataset:
-    args:
-      name: MNIST
-      mode: pair # [pair,single]
-      root_path: /Users/lee/Desktop/SR-backdoor/lhw/datasets/DIV2K
-      batch_size: 16
-val_dataset:
-  dataset:
-    args:
-      name: MNIST
-      mode: pair
-      root_path: /Users/lee/Desktop/SR-backdoor/lhw/datasets/DIV2K
-      batch_size: 16
+Experiment_name: TestMyArch
+#mode
+mode:
+    name: 'cpu'
+    ids: [0,1,2,3]
+
+#define dataloader
+dataset:
+    name: MNIST
+    root_path: ../data
+    train_dataset:
+        args:
+            batch_size: 16
+    val_dataset:
+        args:
+            batch_size: 16
+
+#define model
 model:
-  name: liif
-  args: null
+  name: MNIST
+
+#Training
+epoch_max: 10
+epoch_val: 1
+epoch_save: 2
 optimizer:
   name: adam
   args:
     lr: 0.0001
-    epoch_max: 1000
-    multi_step_lr:
-      milestones:
-      - 200
-      - 400
-      - 600
-      - 800
-      gamma: 0.5
-epoch_val: 1
-epoch_save: 100
-gpu: [0]
+    momentum: 0.5

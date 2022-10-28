@@ -1,31 +1,42 @@
 import argparse
-import os
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader
-from torch.optim.lr_scheduler import MultiStepLR
-from tqdm import tqdm
-import yaml
+import os.path
+
 from units import *
 from dataloader import load_data
 from model import *
 from train import *
 from test import *
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', required=False, default='./options.yaml', type=str, help='Select GPUs')
     args = parser.parse_args()
 
+    # Set options
     config = load_conf(args.config)
-    set_envs(config)
-    train_loader,test_loader=load_data(config)
 
-    model=MNIST_model()
-    epoch_num=5
+    if config['mode']['name'] == 'cuda':
+        os.environ['CUDA_VISIBLE_DEVICES'] = str(config['mode']['ids'])
+        print('Now is GPU mode. DEVICES : ', config['mode']['ids'])
+    else:
+        print('Now is CPU mode')
 
-    for epoch in range(epoch_num):
-        train_loop=tqdm.tqdm(enumerate(train_loader),total=len(train_loader))
-        #test_loop=tqdm.tqdm(enumerate(test_loader),total=len(test_loader))
-        train(model, epoch,epoch_num, train_loop)
-        test(model,test_loader)
+    # Set DataLoader
+    train_loader, test_loader = load_data(config)
+
+    # Define model
+    model = MNIST_model()
+
+    # Print
+    print_arch(model, config)
+
+    for epoch in range(config['epoch_max']+1):
+        train_loop = tqdm(enumerate(train_loader), total=len(train_loader), ncols=100)
+        train(model, epoch, config, train_loop)
+        if epoch % config['epoch_val'] == 0:
+            test(model, config, test_loader)
+        if epoch % config['epoch_save'] == 0:
+            torch.save(model.state_dict(), os.path.join('../res/{}'.format(config['Experiment_name']), 'Epoch{}.pt'.format(epoch)))
+
+    torch.save(model.state_dict(), os.path.join('../res/{}'.format(config['Experiment_name']), 'FinalEpoch.pt'))

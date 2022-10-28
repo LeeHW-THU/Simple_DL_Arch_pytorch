@@ -3,39 +3,44 @@ import torch.nn.functional as F
 import tqdm
 import numpy
 from torch import nn
+from units import get_optimizer
 
-def train(model, epoch,epoch_num, train_loader):
-    """训练"""
-    device = torch.device('cpu')
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
-    #optimizer = torch.optim.Adam(model.parameters(),lr=0.01)
 
-    # 训练模式
+def train(model, epoch, config, train_loader):
+    """Start train"""
+    if config['mode']['name'] == 'gpu':
+        device = torch.device('cuda:{}'.format(str(config['mode']['ids'])))
+    else:
+        device = torch.device('cpu')
+
+    # Train mode
     model.train()
-    model=model.to(device)
+    model = model.to(device)
 
-    # 迭代
+    # Define optimizer
+    optimizer = get_optimizer(model.parameters(), config)
+
+    # Start iter
     for batch_idx, (data, target) in train_loader:
-        # 加速
-
+        # Speedup
         data, target = data.to(device), target.to(device)
 
-        # 梯度清零
+        # Set grad to ZERO
         optimizer.zero_grad()
 
+        # Input Model
         output = model(data)
 
-        # 计算损失
+        # Calculate loss
         loss = F.nll_loss(output, target).to(device)
 
-        # 反向传播
+        # Backward
         loss.backward()
 
-        # 更新梯度
+        # Update grad
         optimizer.step()
 
-
-        # 打印损失
-
+        # Print Loss
+        epoch_num = config['epoch_max']
         train_loader.set_description(f'Epoch [{epoch+1}/{epoch_num}]')
-        train_loader.set_postfix(loss='%.8f'%loss.item())
+        train_loader.set_postfix(loss='%.8f' % loss.item())

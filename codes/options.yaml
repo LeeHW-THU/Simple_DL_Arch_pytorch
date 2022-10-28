@@ -1,0 +1,33 @@
+name: test1
+train_dataset:
+  dataset:
+    args:
+      name: MNIST
+      mode: pair # [pair,single]
+      root_path: /Users/lee/Desktop/SR-backdoor/lhw/datasets/DIV2K
+      batch_size: 16
+val_dataset:
+  dataset:
+    args:
+      name: MNIST
+      mode: pair
+      root_path: /Users/lee/Desktop/SR-backdoor/lhw/datasets/DIV2K
+      batch_size: 16
+model:
+  name: liif
+  args: null
+optimizer:
+  name: adam
+  args:
+    lr: 0.0001
+    epoch_max: 1000
+    multi_step_lr:
+      milestones:
+      - 200
+      - 400
+      - 600
+      - 800
+      gamma: 0.5
+epoch_val: 1
+epoch_save: 100
+gpu: [0]

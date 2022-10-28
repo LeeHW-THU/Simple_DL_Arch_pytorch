@@ -3,6 +3,7 @@ import os
 import torch
 from tqdm import tqdm
 from torchstat import stat
+from models import MNIST,CIFAR10
 
 
 def load_conf(config_path):
@@ -12,7 +13,7 @@ def load_conf(config_path):
         os.mkdir('../res')
     if not os.path.exists('../res/{}'.format(config['Experiment_name'])):
         os.mkdir('../res/{}'.format(config['Experiment_name']))
-    with open(os.path.join('../res/{}'.format(config['Experiment_name']), config_path), 'w') as f:
+    with open(os.path.join('../res/{}'.format(config['Experiment_name']), config_path.split('/')[-1]), 'w') as f:
         yaml.dump(config, f, sort_keys=False)
 
     print('Config Loaded.')
@@ -29,11 +30,13 @@ def get_optimizer(parameters, config):
         lr = config['optimizer']['args']['lr']
         momentum = config['optimizer']['args']['momentum']
         optimizer = torch.optim.SGD(parameters, lr=lr, momentum=momentum)
+
     return optimizer
 
 
 def print_arch(model, config):
     print('Experiment_name : ', config['Experiment_name'])
+    print('Model name : ', config['model']['name'])
     print('Dataset_name : ', config['dataset']['name'])
     print('Dataset_path : ', config['dataset']['root_path'])
     print('Train_BatchSize : {} , Val_BatchSize : {}'.format(
@@ -46,4 +49,15 @@ def print_arch(model, config):
         config['epoch_save']
     ))
     print('Optimizer : ', config['optimizer']['name'])
-    stat(model, (1, 28, 28))
+    C, H, W = config['model']['args']['in_size']
+    stat(model, (C, H, W))
+
+
+def get_model(config):
+    name = config['model']['name']
+    model = None
+    if name == 'MNIST':
+        model = MNIST.MNIST_model()
+    elif name == 'CIFAR':
+        model = CIFAR10.cifar10_model()
+    return model

@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
+from loss import *
 
 
 def test(model, config, test_loader):
@@ -17,6 +18,7 @@ def test(model, config, test_loader):
     # Define
     correct = 0
     test_loss = 0
+    loss_fun = get_loss(config)
 
     with torch.no_grad():
         for data, target in test_loader:
@@ -27,7 +29,7 @@ def test(model, config, test_loader):
             output = model(data)
 
             # Calculate Loss
-            test_loss += F.nll_loss(output, target, reduction='sum').item()
+            test_loss += loss_fun(output, target).item()
 
             # Get result
             pred = output.argmax(dim=1, keepdim=True)
@@ -42,7 +44,7 @@ def test(model, config, test_loader):
     tqdm.write('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
-    tqdm.write('{{"metric": "Eval - NLL Loss", "value": {}}}'.format(
+    tqdm.write('{{"metric": "Eval - Loss", "value": {}}}'.format(
         test_loss))
     tqdm.write('{{"metric": "Eval - Accuracy", "value": {}}}\n'.format(
         100. * correct / len(test_loader.dataset)))

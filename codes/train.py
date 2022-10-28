@@ -4,6 +4,7 @@ import tqdm
 import numpy
 from torch import nn
 from units import get_optimizer
+from loss import *
 
 
 def train(model, epoch, config, train_loader):
@@ -19,6 +20,7 @@ def train(model, epoch, config, train_loader):
 
     # Define optimizer
     optimizer = get_optimizer(model.parameters(), config)
+    loss_fun = get_loss(config)
 
     # Start iter
     for batch_idx, (data, target) in train_loader:
@@ -32,7 +34,7 @@ def train(model, epoch, config, train_loader):
         output = model(data)
 
         # Calculate loss
-        loss = F.nll_loss(output, target).to(device)
+        loss = loss_fun(output, target).to(device)
 
         # Backward
         loss.backward()

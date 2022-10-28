@@ -3,6 +3,8 @@ import torchvision
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 import torch.nn as nn
+
+
 class MNIST_model(torch.nn.Module):
     def __init__(self):
         super(MNIST_model, self).__init__()

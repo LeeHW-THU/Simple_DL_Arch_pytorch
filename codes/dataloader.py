@@ -13,6 +13,9 @@ def load_data(config):
     # for mnist data
     if data_name == 'MNIST':
         train_loader, test_loader = mnist_dataloader(root_path, config)
+    # f0r CIFAR10 data
+    if data_name == 'CIFAR10':
+        train_loader, test_loader = cifar10_dataloader(root_path, config)
 
     return train_loader, test_loader
 
@@ -45,6 +48,25 @@ def mnist_dataloader(root_path, config):
 
     test_loader = torch.utils.data.DataLoader(
         datasets.MNIST(root=root_path, train=False, download=True,
+                       transform=transform),
+        batch_size=config['dataset']['val_dataset']['args']['batch_size'], shuffle=True)
+
+    return train_loader, test_loader
+
+
+def cifar10_dataloader(root_path, config):
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
+
+    train_loader = torch.utils.data.DataLoader(
+        datasets.CIFAR10(root=root_path, train=True, download=True,
+                       transform=transform),
+        batch_size=config['dataset']['train_dataset']['args']['batch_size'], shuffle=True)
+
+    test_loader = torch.utils.data.DataLoader(
+        datasets.CIFAR10(root=root_path, train=False, download=True,
                        transform=transform),
         batch_size=config['dataset']['val_dataset']['args']['batch_size'], shuffle=True)
 

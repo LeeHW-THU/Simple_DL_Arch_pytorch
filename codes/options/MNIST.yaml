@@ -1,0 +1,35 @@
+Experiment_name: MNIST_train
+#mode
+mode:
+  name: 'cpu'
+  ids: [0,1,2,3]
+
+#define dataloader
+dataset:
+  name: MNIST
+  root_path: ../data
+  train_dataset:
+    args:
+      batch_size: 4
+  val_dataset:
+    args:
+      batch_size: 4
+
+#define model
+model:
+  name: MNIST
+  args:
+    in_size: [1,28,28]
+
+#Training
+epoch_max: 10
+epoch_val: 1
+epoch_save: 2
+loss:
+  name: nll_loss
+
+optimizer:
+  name: adam
+  args:
+    lr: 0.0001
+    momentum: 0.5

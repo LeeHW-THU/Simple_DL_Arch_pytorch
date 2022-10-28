@@ -3,14 +3,13 @@ import os.path
 
 from units import *
 from dataloader import load_data
-from model import *
 from train import *
 from test import *
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', required=False, default='./options.yaml', type=str, help='Select GPUs')
+    parser.add_argument('--config', required=False, default='./options/MNIST.yaml', type=str, help='Select GPUs')
     args = parser.parse_args()
 
     # Set options
@@ -26,13 +25,13 @@ if __name__ == '__main__':
     train_loader, test_loader = load_data(config)
 
     # Define model
-    model = MNIST_model()
+    model = get_model(config)
 
     # Print
     print_arch(model, config)
 
     for epoch in range(config['epoch_max']+1):
-        train_loop = tqdm(enumerate(train_loader), total=len(train_loader), ncols=100)
+        train_loop = tqdm(enumerate(train_loader), total=len(train_loader), ncols=130)
         train(model, epoch, config, train_loop)
         if epoch % config['epoch_val'] == 0:
             test(model, config, test_loader)

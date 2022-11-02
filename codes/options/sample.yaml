@@ -1,35 +1,35 @@
-Experiment_name: YAMLsample
+Experiment_name: CIFAR10_train
 #mode
 mode:
-    name: 'cpu'  # [cpu,gpu]
+    name: 'cpu'
     ids: [0,1,2,3]
 
 #define dataloader
 dataset:
-    name: CIFAR10  # [MNIST,CIFAR10]
+    name: CIFAR10
     root_path: ../data
     train_dataset:
         args:
             batch_size: 4
-    val_dataset:
-        args:
-            batch_size: 4
+            val_dataset:
+                args:
+                    batch_size: 4
 
 #define model
 model:
-  name: CIFAR # [CIFAR,MNIST]
-  args:
-
+    name: CIFAR
+    args:
+        in_size: [3,32,32]
 
 #Training
 epoch_max: 10
 epoch_val: 1
 epoch_save: 2
 loss:
-  name: nll_loss # [nll_loss,CrossEntropy]
+    name: CrossEntropy
 
 optimizer:
-  name: adam # [adam,SGD]
-  args:
-    lr: 0.0001
-    momentum: 0.5
+    name: SGD
+    args:
+        lr: 0.0001
+        momentum: 0.5
